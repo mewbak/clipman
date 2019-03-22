@@ -52,6 +52,7 @@ func dmenu(list []string, max int) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	trimmed := selected[:len(selected)-1] // drop newline
 
-	return guide[string(selected)], nil
+	return guide[string(trimmed)], nil
 }

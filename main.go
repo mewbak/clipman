@@ -74,21 +74,23 @@ func main() {
 
 		l := len(history)
 
-		// wl-paste will always give back the last copied text
-		// (as long as the place we copied from is still running)
-		if history[l-1] == text {
-			time.Sleep(sleep)
-			continue
-		}
+		if l > 0 {
+			// wl-paste will always give back the last copied text
+			// (as long as the place we copied from is still running)
+			if history[l-1] == text {
+				time.Sleep(sleep)
+				continue
+			}
 
-		if l == max {
-			// we know that at any given time len(history) cannot be bigger than max,
-			// so it's enough to drop the first element
-			history = history[1:]
-		}
+			if l == max {
+				// we know that at any given time len(history) cannot be bigger than max,
+				// so it's enough to drop the first element
+				history = history[1:]
+			}
 
-		// remove duplicates
-		history = filter(history, text)
+			// remove duplicates
+			history = filter(history, text)
+		}
 
 		history = append(history, text)
 

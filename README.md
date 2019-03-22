@@ -10,8 +10,8 @@ A basic clipboard manager for Wayland.
 
 ## Usage
 
-The demon that collects history is written in Go. Install it in your path, then run it in your Sway session by adding `exec clipman` at the beginning of your config.
+Install the binary in your path, then run it in your Sway session by adding `exec clipman -d` at the beginning of your config.
 
-You can configure how many history items to preserve (default: 15) by editing directly the source.
+You can configure how many unique history items to preserve (default: 15) by editing directly the source.
 
-To query the history and select items, run the provided python script (`clipman.py`). You can assign it to a keybinding.
+To query the history and select items, run the binary as `clipman -s`. You can assign it to a keybinding: `bindsym $mod+h exec clipman -s`.

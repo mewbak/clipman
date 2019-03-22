@@ -38,10 +38,10 @@ func dmenu(list []string, max int) (string, error) {
 	// however, when it sends them back, we need a way to restore them to non literals
 	guide := make(map[string]string)
 	reprList := []string{}
-	for _, l := range list {
-		repr := fmt.Sprintf("%#v", l)
+	for _, original := range list {
+		repr := fmt.Sprintf("%#v", original)
 		repr = repr[1 : len(repr)-1] // drop quotes
-		guide[repr] = l
+		guide[repr] = original
 		reprList = append(reprList, repr)
 	}
 

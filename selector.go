@@ -36,11 +36,12 @@ func dmenu(list []string, max int) (string, error) {
 
 	// dmenu will break if items contain newlines, so we must pass them as literals.
 	// however, when it sends them back, we need a way to restore them to non literals
-	guide := make(map[string]int)
+	guide := make(map[string]string)
 	reprList := []string{}
-	for i, l := range list {
+	for _, l := range list {
 		repr := fmt.Sprintf("%#v", l)
-		guide[repr] = i
+		repr = repr[1 : len(repr)-1] // drop quotes
+		guide[repr] = l
 		reprList = append(reprList, repr)
 	}
 
@@ -52,7 +53,5 @@ func dmenu(list []string, max int) (string, error) {
 		return "", err
 	}
 
-	unescaped := list[guide[string(selected)]]
-
-	return unescaped, nil
+	return guide[string(selected)], nil
 }

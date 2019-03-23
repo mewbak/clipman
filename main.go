@@ -16,6 +16,7 @@ var (
 	app        = kingpin.New("clipman", "A clipboard manager for Wayland")
 	asDemon    = app.Flag("demon", "Run as a demon to record clipboard events").Short('d').Default("false").Bool()
 	asSelector = app.Flag("select", "Select an item from clipboard history").Short('s').Default("false").Bool()
+	noPersist  = app.Flag("no-persist", "Don't persist a copy buffer after a program exits").Short('P').Default("false").Bool()
 )
 
 var (
@@ -44,7 +45,8 @@ func main() {
 	}
 
 	if *asDemon {
-		if err := listen(history, histfile); err != nil {
+		persist := !*noPersist
+		if err := listen(history, histfile, persist); err != nil {
 			log.Fatal(err)
 		}
 	} else if *asSelector {

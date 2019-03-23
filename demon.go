@@ -42,7 +42,7 @@ func filter(history []string, text string) []string {
 	return history
 }
 
-func listen(history []string, histfile string) error {
+func listen(history []string, histfile string, persist bool) error {
 
 	for {
 
@@ -83,6 +83,14 @@ func listen(history []string, histfile string) error {
 		err = write(history, histfile)
 		if err != nil {
 			return err
+		}
+
+		if persist {
+			// make the copy buffer available to all applications,
+			// even when the source has disappeared
+			if err := exec.Command("wl-copy", text).Run(); err != nil {
+				return err
+			}
 		}
 
 		// writing to json is time consuming, so it's fine to sleep less and

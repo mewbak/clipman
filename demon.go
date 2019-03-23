@@ -7,8 +7,6 @@ import (
 	"time"
 )
 
-const sleep = 1 * time.Second
-
 func write(history []string, histfile string) error {
 	histlog, err := json.Marshal(history)
 	if err != nil {
@@ -52,7 +50,7 @@ func listen(history []string, histfile string) error {
 		text := string(t)
 		if err != nil || text == "" {
 			// there's nothing to select, so we sleep.
-			time.Sleep(sleep)
+			time.Sleep(1 * time.Second)
 			continue
 		}
 
@@ -63,7 +61,7 @@ func listen(history []string, histfile string) error {
 			// wl-paste will always give back the last copied text
 			// (as long as the place we copied from is still running)
 			if history[l-1] == text {
-				time.Sleep(sleep)
+				time.Sleep(1 * time.Second)
 				continue
 			}
 
@@ -87,7 +85,10 @@ func listen(history []string, histfile string) error {
 			return err
 		}
 
-		time.Sleep(sleep)
+		// writing to json is time consuming, so it's fine to sleep less and
+		// get ready to detect new events sooner.
+		// also because if we copied once, we might copy soon after.
+		time.Sleep(500 * time.Millisecond)
 	}
 
 }

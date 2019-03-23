@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func selector(history []string) error {
+func selector(history []string, max int) error {
 
 	// reverse the history
 	for i, j := 0, len(history)-1; i < j; i, j = i+1, j-1 {

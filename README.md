@@ -12,6 +12,4 @@ A basic clipboard manager for Wayland.
 
 Install the binary in your path, then run it in your Sway session by adding `exec clipman -d` at the beginning of your config.
 
-You should edit `main.go` directly to configure how many unique history items to preserve (default: 15).
-
 To query the history and select items, run the binary as `clipman -s`. You can assign it to a keybinding: `bindsym $mod+h exec clipman -s`.

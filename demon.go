@@ -42,7 +42,7 @@ func filter(history []string, text string) []string {
 	return history
 }
 
-func listen(history []string, histfile string, persist bool) error {
+func listen(history []string, histfile string, persist bool, max int) error {
 
 	for {
 

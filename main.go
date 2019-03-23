@@ -10,13 +10,12 @@ import (
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
-const max = 15
-
 var (
 	app        = kingpin.New("clipman", "A clipboard manager for Wayland")
 	asDemon    = app.Flag("demon", "Run as a demon to record clipboard events").Short('d').Default("false").Bool()
 	asSelector = app.Flag("select", "Select an item from clipboard history").Short('s').Default("false").Bool()
 	noPersist  = app.Flag("no-persist", "Don't persist a copy buffer after a program exits").Short('P').Default("false").Bool()
+	max        = app.Flag("max-items", "How many copy items to store in history").Default("15").Int()
 )
 
 var (
@@ -46,11 +45,11 @@ func main() {
 
 	if *asDemon {
 		persist := !*noPersist
-		if err := listen(history, histfile, persist); err != nil {
+		if err := listen(history, histfile, persist, *max); err != nil {
 			log.Fatal(err)
 		}
 	} else if *asSelector {
-		if err := selector(history); err != nil {
+		if err := selector(history, *max); err != nil {
 			log.Fatal(err)
 		}
 	}

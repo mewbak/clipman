@@ -18,11 +18,6 @@ var (
 	max        = app.Flag("max-items", "items to store in history (with -d) or display before scrolling (with -s)").Default("15").Int()
 )
 
-var (
-	histfile string
-	history  []string
-)
-
 func main() {
 	app.HelpFlag.Short('h')
 	kingpin.MustParse(app.Parse(os.Args[1:]))
@@ -34,8 +29,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	histfile = path.Join(h, ".local/share/clipman.json")
+	histfile := path.Join(h, ".local/share/clipman.json")
 
+	var history []string
 	b, err := ioutil.ReadFile(histfile)
 	if err == nil {
 		if err := json.Unmarshal(b, &history); err != nil {

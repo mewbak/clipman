@@ -43,7 +43,6 @@ func filter(history []string, text string) []string {
 }
 
 func listen(history []string, histfile string, persist bool, max int) error {
-
 	for {
 
 		t, err := exec.Command("wl-paste", []string{"-n", "-t", "text"}...).Output()
@@ -72,7 +71,6 @@ func listen(history []string, histfile string, persist bool, max int) error {
 			}
 
 			// remove duplicates
-			// consider doing this in the frontend, for sparing resources
 			history = filter(history, text)
 
 		}
@@ -98,5 +96,4 @@ func listen(history []string, histfile string, persist bool, max int) error {
 		// also because if we copied once, we might copy soon after.
 		time.Sleep(250 * time.Millisecond)
 	}
-
 }

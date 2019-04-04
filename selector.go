@@ -28,6 +28,10 @@ func selector(history []string, max int) error {
 }
 
 func dmenu(list []string, max int) (string, error) {
+	if len(list) == 0 {
+		return "", nil
+	}
+
 	args := []string{"dmenu", "-b",
 		"-fn",
 		"-misc-dejavu sans mono-medium-r-normal--17-120-100-100-m-0-iso8859-16",

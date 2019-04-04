@@ -40,7 +40,11 @@ func dmenu(list []string, max int) (string, error) {
 	reprList := []string{}
 	for _, original := range list {
 		repr := fmt.Sprintf("%#v", original)
-		repr = repr[1 : len(repr)-1] // drop quotes
+		max := len(repr) - 1 // drop right quote
+		if max > 800 {       // dmenu will split lines longer than 1200 something; we cut at 800.
+			max = 800
+		}
+		repr = repr[1:max] // drop left quote
 		guide[repr] = original
 		reprList = append(reprList, repr)
 	}
@@ -54,5 +58,10 @@ func dmenu(list []string, max int) (string, error) {
 	}
 	trimmed := selected[:len(selected)-1] // drop newline
 
-	return guide[string(trimmed)], nil
+	sel, ok := guide[string(trimmed)]
+	if !ok {
+		return "", fmt.Errorf("couldn't recover original string; please report this bug along with a copy of your clipman.json")
+	}
+
+	return sel, nil
 }

@@ -5,9 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"os/signal"
 	"path"
-	"syscall"
 
 	"gopkg.in/alecthomas/kingpin.v2"
 )
@@ -42,20 +40,6 @@ func main() {
 	}
 
 	if *asDemon {
-		// exit cleanly on ctrl-C or kill
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-		go func() {
-			for range c {
-				// dump history to file so that other apps can query it
-				err = write(history, histfile)
-				if err != nil {
-					log.Fatal(err)
-				}
-				os.Exit(0)
-			}
-		}()
-
 		persist := !*noPersist
 		if err := listen(history, histfile, persist, *max); err != nil {
 			log.Fatal(err)

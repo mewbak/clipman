@@ -45,8 +45,10 @@ func dmenu(list []string, max int) (string, error) {
 	for _, original := range list {
 		repr := fmt.Sprintf("%#v", original)
 		max := len(repr) - 1 // drop right quote
-		if max > 800 {       // dmenu will split lines longer than 1200 something; we cut at 800.
-			max = 800
+		maxChars := 400
+		// dmenu will split lines longer than 1200 something; we cut at 400 to spare memory
+		if max > maxChars {
+			max = maxChars
 		}
 		repr = repr[1:max] // drop left quote
 		guide[repr] = original

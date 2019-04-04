@@ -90,10 +90,5 @@ func listen(history []string, histfile string, persist bool, max int) error {
 				return err
 			}
 		}
-
-		// writing to json is time consuming, so it's fine to sleep less and
-		// get ready to detect new events sooner.
-		// also because if we copied once, we might copy soon after.
-		time.Sleep(250 * time.Millisecond)
 	}
 }

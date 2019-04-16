@@ -35,7 +35,7 @@ func main() {
 	b, err := ioutil.ReadFile(histfile)
 	if err == nil {
 		if err := json.Unmarshal(b, &history); err != nil {
-			log.Fatal(err)
+			log.Fatalf("Failure unmarshaling history (main.38): %s", err)
 		}
 	}
 

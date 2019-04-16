@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os/exec"
 	"time"
@@ -46,8 +47,12 @@ func listen(history []string, histfile string, persist bool, max int) error {
 	for {
 
 		t, err := exec.Command("wl-paste", []string{"-n", "-t", "text"}...).Output()
+		if err != nil {
+			return fmt.Errorf("error running wl-paste (demon.52): %s", err)
+		}
+
 		text := string(t)
-		if err != nil || text == "" {
+		if text == "" {
 			// there's nothing to select, so we sleep.
 			time.Sleep(1 * time.Second)
 			continue
@@ -80,14 +85,14 @@ func listen(history []string, histfile string, persist bool, max int) error {
 		// dump history to file so that other apps can query it
 		err = write(history, histfile)
 		if err != nil {
-			return err
+			return fmt.Errorf("error writing history (demon.83): %s", err)
 		}
 
 		if persist {
 			// make the copy buffer available to all applications,
 			// even when the source has disappeared
 			if err := exec.Command("wl-copy", text).Run(); err != nil {
-				return err
+				return fmt.Errorf("error running wl-copy (demon.91): %s", err)
 			}
 		}
 	}

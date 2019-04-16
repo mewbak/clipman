@@ -20,7 +20,7 @@ func selector(history []string, max int) error {
 	}
 
 	// serve selection to the OS
-	if err := exec.Command("wl-copy", selected).Run(); err != nil {
+	if err := exec.Command("wl-copy", []string{"--", selected}...).Run(); err != nil {
 		return err
 	}
 

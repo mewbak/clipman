@@ -91,7 +91,7 @@ func listen(history []string, histfile string, persist bool, max int) error {
 		if persist {
 			// make the copy buffer available to all applications,
 			// even when the source has disappeared
-			if err := exec.Command("wl-copy", text).Run(); err != nil {
+			if err := exec.Command("wl-copy", []string{"--", text}...).Run(); err != nil {
 				return fmt.Errorf("error running wl-copy (demon.91): %s", err)
 			}
 		}

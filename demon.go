@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os/exec"
 	"time"
 )
@@ -46,12 +47,18 @@ func filter(history []string, text string) []string {
 func listen(history []string, histfile string, persist bool, max int) error {
 	for {
 
-		t, err := exec.Command("wl-paste", []string{"-n", "-t", "text"}...).Output()
+		t, err := exec.Command("wl-paste", []string{"-n", "-t", "text"}...).CombinedOutput()
 		if err != nil {
-			return fmt.Errorf("error running wl-paste (demon.52): %s", err)
+			// wl-paste exits 1 if there's no selection (e.g., when running it at OS startup)
+			if string(t) != "No selection" {
+				log.Printf("Error running wl-paste (demon.52): %s", t)
+			}
+			time.Sleep(1 * time.Second)
+			continue
 		}
 
 		text := string(t)
+
 		if text == "" {
 			// there's nothing to select, so we sleep.
 			time.Sleep(1 * time.Second)

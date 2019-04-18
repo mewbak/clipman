@@ -20,11 +20,9 @@ func selector(history []string, max int) error {
 	}
 
 	// serve selection to the OS
-	if err := exec.Command("wl-copy", []string{"--", selected}...).Run(); err != nil {
-		return err
-	}
+	err = exec.Command("wl-copy", []string{"--", selected}...).Run()
 
-	return nil
+	return err
 }
 
 func dmenu(list []string, max int) (string, error) {

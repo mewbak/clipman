@@ -50,7 +50,7 @@ func listen(history []string, histfile string, persist bool, max int) error {
 		t, err := exec.Command("wl-paste", []string{"-n", "-t", "text"}...).CombinedOutput()
 		if err != nil {
 			// wl-paste exits 1 if there's no selection (e.g., when running it at OS startup)
-			if string(t) != "No selection" {
+			if string(t) != "No selection\n" {
 				log.Printf("Error running wl-paste (demon.52): %s", t)
 			}
 			time.Sleep(1 * time.Second)

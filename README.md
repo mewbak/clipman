@@ -4,9 +4,9 @@ A basic clipboard manager for Wayland, with support for persisting copy buffers 
 
 ## Requirements
 
-- a windows manager that uses `wlr-data-control`, like Sway and other wlroots-bases WMs.
+- a windows manager that uses `wlr-data-control`, like Sway and other wlroots-based WMs.
 - wl-clipboard from latest master (NOT v1.0)
-- dmenu
+- dmenu or rofi
 
 ## Usage
 

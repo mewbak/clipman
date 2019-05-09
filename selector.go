@@ -30,18 +30,18 @@ func dmenu(list []string, max int, tool string) (string, error) {
 		return "", nil
 	}
 
-    var args []string;
-    if tool == "dmenu" {
-        args = []string{"dmenu", "-b",
-            "-fn",
-            "-misc-dejavu sans mono-medium-r-normal--17-120-100-100-m-0-iso8859-16",
-            "-l",
-            strconv.Itoa(max)}
-    } else {
-        args = []string{"rofi", "-dmenu",
-            "-lines",
-            strconv.Itoa(max)}
-    }
+	var args []string
+	if tool == "dmenu" {
+		args = []string{"dmenu", "-b",
+			"-fn",
+			"-misc-dejavu sans mono-medium-r-normal--17-120-100-100-m-0-iso8859-16",
+			"-l",
+			strconv.Itoa(max)}
+	} else {
+		args = []string{"rofi", "-dmenu",
+			"-lines",
+			strconv.Itoa(max)}
+	}
 
 	// dmenu will break if items contain newlines, so we must pass them as literals.
 	// however, when it sends them back, we need a way to restore them to non literals
@@ -65,7 +65,6 @@ func dmenu(list []string, max int, tool string) (string, error) {
 	cmd := exec.Cmd{Path: "/usr/bin/" + tool, Args: args, Stdin: input}
 	selected, err := cmd.Output()
 	if err != nil {
-        fmt.Printf("%s", err)
 		return "", err
 	}
 	trimmed := selected[:len(selected)-1] // drop newline

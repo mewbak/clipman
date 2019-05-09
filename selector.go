@@ -15,8 +15,11 @@ func selector(history []string, max int, tool string) error {
 
 	selected, err := dmenu(history, max, tool)
 	if err != nil {
-		// dmenu exits with error when no selection done
-		return nil
+		if err.Error() == "exit status 1" {
+			// dmenu exits with this error when no selection done
+			return nil
+		}
+		return err
 	}
 
 	// serve selection to the OS
@@ -28,6 +31,11 @@ func selector(history []string, max int, tool string) error {
 func dmenu(list []string, max int, tool string) (string, error) {
 	if len(list) == 0 {
 		return "", nil
+	}
+
+	bin, err := exec.LookPath("/usr/bin/" + tool)
+	if err != nil {
+		return "", fmt.Errorf("%s is not installed", tool)
 	}
 
 	var args []string
@@ -62,7 +70,7 @@ func dmenu(list []string, max int, tool string) (string, error) {
 
 	input := strings.NewReader(strings.Join(reprList, "\n"))
 
-	cmd := exec.Cmd{Path: "/usr/bin/" + tool, Args: args, Stdin: input}
+	cmd := exec.Cmd{Path: bin, Args: args, Stdin: input}
 	selected, err := cmd.Output()
 	if err != nil {
 		return "", err

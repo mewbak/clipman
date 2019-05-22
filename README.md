@@ -10,7 +10,7 @@ Requirements:
 - wl-clipboard from latest master (NOT v1.0)
 - dmenu or rofi
 
-[Install go](https://golang.org/doc/install), add `$GOPATH/bin` to your path, then run `go install` inside this folder.
+[Install go](https://golang.org/doc/install), add `$GOPATH/bin` to your path, then run `go get github.com/yory8/clipman` OR run `go install` inside this folder.
 
 Archlinux users can find a PKGBUILD [here](https://aur.archlinux.org/packages/clipman/).
 

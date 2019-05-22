@@ -15,10 +15,8 @@ func write(history []string, histfile string) error {
 		return err
 	}
 	err = ioutil.WriteFile(histfile, histlog, 0644)
-	if err != nil {
-		return err
-	}
-	return nil
+
+	return err
 }
 
 func filter(history []string, text string) []string {

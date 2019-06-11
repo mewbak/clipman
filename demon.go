@@ -90,7 +90,7 @@ func listen(history []string, histfile string, persist bool, max int) error {
 		// dump history to file so that other apps can query it
 		err = write(history, histfile)
 		if err != nil {
-			return fmt.Errorf("error writing history (demon.83): %s", err)
+			return fmt.Errorf("Error writing history (demon.83): %s", err)
 		}
 
 		if persist {

@@ -29,7 +29,7 @@ func dmenu(list []string, max int, tool string) (string, error) {
 		return "", nil
 	}
 
-	bin, err := exec.LookPath("/usr/bin/" + tool)
+	bin, err := exec.LookPath(tool)
 	if err != nil {
 		return "", fmt.Errorf("%s is not installed", tool)
 	}

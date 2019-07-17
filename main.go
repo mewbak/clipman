@@ -42,9 +42,7 @@ func main() {
 
 	if *asDemon {
 		persist := !*noPersist
-		if err := listen(history, histfile, persist, *max); err != nil {
-			log.Fatal(err)
-		}
+		listen(history, histfile, persist, *max)
 	} else if *asSelector {
 		if err := selector(history, *max, *tool); err != nil {
 			log.Fatal(err)

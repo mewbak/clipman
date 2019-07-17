@@ -44,6 +44,9 @@ func main() {
 		persist := !*noPersist
 		listen(history, histfile, persist, *max)
 	} else if *asSelector {
+		if len(history) == 0 {
+			log.Fatal("No history available")
+		}
 		if err := selector(history, *max, *tool); err != nil {
 			log.Fatal(err)
 		}

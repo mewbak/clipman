@@ -44,7 +44,7 @@ func filter(history []string, text string) []string {
 func listen(history []string, histfile string, persist bool, max int) {
 	for {
 
-		t, err := exec.Command("wl-paste", "-n").CombinedOutput()
+		t, err := exec.Command("wl-paste", "-n", "-t", "text").CombinedOutput()
 		if err != nil {
 			// wl-paste exits 1 if there's no selection (e.g., when running it at OS startup)
 			if string(t) != "No selection\n" {

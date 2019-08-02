@@ -22,8 +22,18 @@ var (
 func main() {
 	app.HelpFlag.Short('h')
 	kingpin.MustParse(app.Parse(os.Args[1:]))
-	if (*asDemon && *asSelector) || (!*asDemon && !*asSelector) {
-		log.Fatal("Missing or incompatible options. See -h/--help for info")
+	modeCount := 0
+	if *asDemon {
+		modeCount++
+	}
+	if *asSelector {
+		modeCount++
+	}
+	if modeCount != 1 {
+		log.Print("Missing or incompatible options. You must provide exactly one of these:")
+		log.Print("  -d, --demon")
+		log.Print("  -s, --select")
+		log.Fatal("See -h/--help for info")
 	}
 
 	h, err := os.UserHomeDir()

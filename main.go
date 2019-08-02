@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -30,10 +31,11 @@ func main() {
 		modeCount++
 	}
 	if modeCount != 1 {
-		log.Print("Missing or incompatible options. You must provide exactly one of these:")
-		log.Print("  -d, --demon")
-		log.Print("  -s, --select")
-		log.Fatal("See -h/--help for info")
+		fmt.Println("Missing or incompatible options. You must provide exactly one of these:")
+		fmt.Println("  -d, --demon")
+		fmt.Println("  -s, --select")
+		fmt.Println("See -h/--help for info")
+		os.Exit(1)
 	}
 
 	h, err := os.UserHomeDir()

@@ -18,6 +18,7 @@ var (
 	noPersist  = app.Flag("no-persist", "Don't persist a copy buffer after a program exits").Short('P').Default("false").Bool()
 	max        = app.Flag("max-items", "items to store in history (with -d) or display before scrolling (with -s)").Default("15").Int()
 	tool       = app.Flag("selector", "Which selector to use: dmenu/rofi").Default("dmenu").String()
+	histpath   = app.Flag("histpath", "Directory where to save history").Default("$XDG_DATA_HOME").String()
 )
 
 func main() {
@@ -38,11 +39,15 @@ func main() {
 		os.Exit(1)
 	}
 
-	h, err := os.UserHomeDir()
-	if err != nil {
-		log.Fatal(err)
+	histpath := *histpath
+	if histpath == "$XDG_DATA_HOME" {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			log.Fatal(err)
+		}
+		histpath = path.Join(home, ".local/share/")
 	}
-	histfile := path.Join(h, ".local/share/clipman.json")
+	histfile := path.Join(histpath, "clipman.json")
 
 	var history []string
 	b, err := ioutil.ReadFile(histfile)

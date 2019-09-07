@@ -43,12 +43,11 @@ func filter(history []string, text string) []string {
 
 func listen(history []string, histfile string, persist bool, max int) {
 	for {
-
 		t, err := exec.Command("wl-paste", "-n", "-t", "text").CombinedOutput()
 		if err != nil {
 			// wl-paste exits 1 if there's no selection (e.g., when running it at OS startup)
 			if string(t) != "No selection\n" {
-				log.Printf("Error running wl-paste (demon.52): %s", t)
+				log.Printf("Error running wl-paste: %s", t)
 			}
 			time.Sleep(1 * time.Second)
 			continue
@@ -84,16 +83,15 @@ func listen(history []string, histfile string, persist bool, max int) {
 		history = append(history, text)
 
 		// dump history to file so that other apps can query it
-		err = write(history, histfile)
-		if err != nil {
-			log.Fatalf("Fatal error writing history (demon.83): %s", err)
+		if err := write(history, histfile); err != nil {
+			log.Fatalf("Fatal error writing history: %s", err)
 		}
 
 		if persist {
 			// make the copy buffer available to all applications,
 			// even when the source has disappeared
 			if err := exec.Command("wl-copy", []string{"--", text}...).Run(); err != nil {
-				log.Printf("Error running wl-copy (demon.91): %s", err)
+				log.Printf("Error running wl-copy: %s", err)
 			}
 		}
 	}

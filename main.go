@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"path"
+	"strings"
 
 	"gopkg.in/alecthomas/kingpin.v2"
 )
@@ -16,9 +16,9 @@ var (
 	asDemon    = app.Flag("demon", "Run as a demon to record clipboard events").Short('d').Default("false").Bool()
 	asSelector = app.Flag("select", "Select an item from clipboard history").Short('s').Default("false").Bool()
 	noPersist  = app.Flag("no-persist", "Don't persist a copy buffer after a program exits").Short('P').Default("false").Bool()
-	max        = app.Flag("max-items", "items to store in history (with -d) or display before scrolling (with -s)").Default("15").Int()
+	max        = app.Flag("max-items", "history size (with -d) or scrollview length (with -s)").Default("15").Int()
 	tool       = app.Flag("selector", "Which selector to use: dmenu/rofi").Default("dmenu").String()
-	histpath   = app.Flag("histpath", "Directory where to save history").Default("$XDG_DATA_HOME").String()
+	histpath   = app.Flag("histpath", "Directory where to save history").Default("~/.local/share/clipman.json").String()
 )
 
 func main() {
@@ -39,22 +39,24 @@ func main() {
 		os.Exit(1)
 	}
 
-	histpath := *histpath
-	if histpath == "$XDG_DATA_HOME" {
+	// set histfile
+	histfile := *histpath
+	if strings.HasPrefix(histfile, "~") {
 		home, err := os.UserHomeDir()
 		if err != nil {
 			log.Fatal(err)
 		}
-		histpath = path.Join(home, ".local/share/")
+		histfile = strings.Replace(histfile, "~", home, 1)
 	}
-	histfile := path.Join(histpath, "clipman.json")
 
+	// read existing history
 	var history []string
 	b, err := ioutil.ReadFile(histfile)
-	if err == nil {
-		if err := json.Unmarshal(b, &history); err != nil {
-			log.Fatalf("Failure unmarshaling history (main.38): %s", err)
-		}
+	if err != nil {
+		log.Fatalf("Failure reading history file: %s", err)
+	}
+	if err := json.Unmarshal(b, &history); err != nil {
+		log.Fatalf("Failure parsing history: %s", err)
 	}
 
 	if *asDemon {

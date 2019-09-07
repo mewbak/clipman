@@ -49,8 +49,8 @@ func dmenu(list []string, max int, tool string) (string, error) {
 
 	// dmenu will break if items contain newlines, so we must pass them as literals.
 	// however, when it sends them back, we need a way to restore them
+	var escaped []string
 	guide := make(map[string]string)
-	escaped := []string{}
 	for _, original := range list {
 		repr := fmt.Sprintf("%#v", original)
 

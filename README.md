@@ -21,3 +21,7 @@ Run the binary in your Sway session by adding `exec clipman -d` (or `exec clipma
 To query the history and select items, run the binary as `clipman -s`. You can assign it to a keybinding: `bindsym $mod+h exec clipman -s`.
 
 For more options: `clipman -h`.
+
+## Versions
+
+This projects follows SemVer conventions.

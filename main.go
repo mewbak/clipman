@@ -17,7 +17,7 @@ var (
 	asSelector = app.Flag("select", "Select an item from clipboard history").Short('s').Default("false").Bool()
 	noPersist  = app.Flag("no-persist", "Don't persist a copy buffer after a program exits").Short('P').Default("false").Bool()
 	max        = app.Flag("max-items", "history size (with -d) or scrollview length (with -s)").Default("15").Int()
-	tool       = app.Flag("selector", "Which selector to use: dmenu/rofi").Default("dmenu").String()
+	tool       = app.Flag("selector", "Which selector to use: dmenu/rofi/-").Default("dmenu").String()
 	histpath   = app.Flag("histpath", "Directory where to save history").Default("~/.local/share/clipman.json").String()
 )
 

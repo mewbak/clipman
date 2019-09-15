@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -29,43 +30,34 @@ func dmenu(list []string, max int, tool string) (string, error) {
 		return "", nil
 	}
 
+	if tool == "-" {
+		escaped, _ := preprocess_history(list, false)
+		os.Stdout.WriteString(strings.Join(escaped, "\n"))
+		return "", nil
+	}
+
 	bin, err := exec.LookPath(tool)
 	if err != nil {
 		return "", fmt.Errorf("%s is not installed", tool)
 	}
 
 	var args []string
-	if tool == "dmenu" {
+	switch tool {
+	case "dmenu":
 		args = []string{"dmenu", "-b",
 			"-fn",
 			"-misc-dejavu sans mono-medium-r-normal--17-120-100-100-m-0-iso8859-16",
 			"-l",
 			strconv.Itoa(max)}
-	} else {
+	case "rofi":
 		args = []string{"rofi", "-dmenu",
 			"-lines",
 			strconv.Itoa(max)}
+	default:
+		return "", fmt.Errorf("Unsupported tool")
 	}
 
-	// dmenu will break if items contain newlines, so we must pass them as literals.
-	// however, when it sends them back, we need a way to restore them
-	var escaped []string
-	guide := make(map[string]string)
-	for _, original := range list {
-		repr := fmt.Sprintf("%#v", original)
-
-		// dmenu will split lines longer than 1200 something; we cut at 400 to spare memory
-		max := len(repr) - 1 // drop right quote
-		maxChars := 400
-		if max > maxChars {
-			max = maxChars
-		}
-		repr = repr[1:max] // drop left quote
-
-		guide[repr] = original
-		escaped = append(escaped, repr)
-	}
-
+	escaped, guide := preprocess_history(list, true)
 	input := strings.NewReader(strings.Join(escaped, "\n"))
 
 	cmd := exec.Cmd{Path: bin, Args: args, Stdin: input}
@@ -85,4 +77,30 @@ func dmenu(list []string, max int, tool string) (string, error) {
 	}
 
 	return sel, nil
+}
+
+func preprocess_history(list []string, cutting bool) ([]string, map[string]string) {
+    // dmenu will break if items contain newlines, so we must pass them as literals.
+    // however, when it sends them back, we need a way to restore them
+    var escaped []string
+    guide := make(map[string]string)
+
+    for _, original := range list {
+        repr := fmt.Sprintf("%#v", original)
+        max := len(repr) - 1 // drop right quote
+
+        // dmenu will split lines longer than 1200 something; we cut at 400 to spare memory
+        if cutting {
+            maxChars := 400
+            if max > maxChars {
+                max = maxChars
+            }
+        }
+
+        repr = repr[1:max] // drop left quote
+        guide[repr] = original
+        escaped = append(escaped, repr)
+    }
+
+    return escaped, guide
 }

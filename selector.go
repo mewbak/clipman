@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"strconv"
@@ -9,6 +10,10 @@ import (
 )
 
 func selector(history []string, max int, tool string) error {
+	if len(history) == 0 {
+		log.Fatal("No history available")
+	}
+
 	// reverse the history
 	for i, j := 0, len(history)-1; i < j; i, j = i+1, j-1 {
 		history[i], history[j] = history[j], history[i]
@@ -26,10 +31,6 @@ func selector(history []string, max int, tool string) error {
 }
 
 func dmenu(list []string, max int, tool string) (string, error) {
-	if len(list) == 0 {
-		return "", nil
-	}
-
 	if tool == "-" {
 		escaped, _ := preprocessHistory(list, false)
 		os.Stdout.WriteString(strings.Join(escaped, "\n"))

@@ -12,39 +12,45 @@ import (
 )
 
 var (
-	app        = kingpin.New("clipman", "A clipboard manager for Wayland")
-	asDemon    = app.Flag("demon", "Run as a demon to record clipboard events").Short('d').Default("false").Bool()
-	asSelector = app.Flag("select", "Select an item from clipboard history").Short('s').Default("false").Bool()
-	noPersist  = app.Flag("no-persist", "Don't persist a copy buffer after a program exits").Short('P').Default("false").Bool()
-	max        = app.Flag("max-items", "history size (with -d) or scrollview length (with -s)").Default("15").Int()
-	tool       = app.Flag("selector", "Which selector to use: dmenu/rofi/-").Default("dmenu").String()
-	histpath   = app.Flag("histpath", "Directory where to save history").Default("~/.local/share/clipman.json").String()
+	app       = kingpin.New("clipman", "A clipboard manager for Wayland")
+	histpath  = app.Flag("histpath", "Path of history file").Default("~/.local/share/clipman.json").String()
+	demon     = app.Command("listen", "Run as a demon to record clipboard events")
+	picker    = app.Command("pick", "Pick an item from clipboard history")
+	noPersist = demon.Flag("no-persist", "Don't persist a copy buffer after a program exits").Short('P').Default("false").Bool()
+	maxDemon  = demon.Flag("max-items", "history size").Default("15").Int()
+	maxPicker = picker.Flag("max-items", "scrollview length").Default("15").Int()
+	tool      = picker.Flag("selector", "Which selector to use: dmenu/rofi/-").Default("dmenu").String()
 )
 
 func main() {
 	app.HelpFlag.Short('h')
-	kingpin.MustParse(app.Parse(os.Args[1:]))
-	modeCount := 0
-	if *asDemon {
-		modeCount++
-	}
-	if *asSelector {
-		modeCount++
-	}
-	if modeCount != 1 {
-		fmt.Println("Missing or incompatible options. You must provide exactly one of these:")
-		fmt.Println("  -d, --demon")
-		fmt.Println("  -s, --select")
-		fmt.Println("See -h/--help for info")
-		os.Exit(1)
-	}
+	switch kingpin.MustParse(app.Parse(os.Args[1:])) {
+	case "listen":
+		persist := !*noPersist
+		histfile, history, err := getHistory()
+		if err != nil {
+			log.Fatal(err)
+		}
+		listen(history, histfile, persist, *maxDemon)
+	case "pick":
+		_, history, err := getHistory()
+		if err != nil {
+			log.Fatal(err)
+		}
 
+		if err := selector(history, *maxPicker, *tool); err != nil {
+			log.Fatal(err)
+		}
+	}
+}
+
+func getHistory() (string, []string, error) {
 	// set histfile
 	histfile := *histpath
 	if strings.HasPrefix(histfile, "~") {
 		home, err := os.UserHomeDir()
 		if err != nil {
-			log.Fatal(err)
+			return "", nil, err
 		}
 		histfile = strings.Replace(histfile, "~", home, 1)
 	}
@@ -54,23 +60,13 @@ func main() {
 	b, err := ioutil.ReadFile(histfile)
 	if err != nil {
 		if !os.IsNotExist(err) {
-			log.Fatalf("Failure reading history file: %s", err)
+			return "", nil, fmt.Errorf("Failure reading history file: %s", err)
 		}
 	} else {
 		if err := json.Unmarshal(b, &history); err != nil {
-			log.Fatalf("Failure parsing history: %s", err)
+			return "", nil, fmt.Errorf("Failure parsing history: %s", err)
 		}
 	}
 
-	if *asDemon {
-		persist := !*noPersist
-		listen(history, histfile, persist, *max)
-	} else if *asSelector {
-		if len(history) == 0 {
-			log.Fatal("No history available")
-		}
-		if err := selector(history, *max, *tool); err != nil {
-			log.Fatal(err)
-		}
-	}
+	return histfile, history, nil
 }

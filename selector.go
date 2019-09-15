@@ -31,7 +31,7 @@ func dmenu(list []string, max int, tool string) (string, error) {
 	}
 
 	if tool == "-" {
-		escaped, _ := preprocess_history(list, false)
+		escaped, _ := preprocessHistory(list, false)
 		os.Stdout.WriteString(strings.Join(escaped, "\n"))
 		return "", nil
 	}
@@ -57,7 +57,7 @@ func dmenu(list []string, max int, tool string) (string, error) {
 		return "", fmt.Errorf("Unsupported tool")
 	}
 
-	escaped, guide := preprocess_history(list, true)
+	escaped, guide := preprocessHistory(list, true)
 	input := strings.NewReader(strings.Join(escaped, "\n"))
 
 	cmd := exec.Cmd{Path: bin, Args: args, Stdin: input}
@@ -79,28 +79,28 @@ func dmenu(list []string, max int, tool string) (string, error) {
 	return sel, nil
 }
 
-func preprocess_history(list []string, cutting bool) ([]string, map[string]string) {
-    // dmenu will break if items contain newlines, so we must pass them as literals.
-    // however, when it sends them back, we need a way to restore them
-    var escaped []string
-    guide := make(map[string]string)
+func preprocessHistory(list []string, cutting bool) ([]string, map[string]string) {
+	// dmenu will break if items contain newlines, so we must pass them as literals.
+	// however, when it sends them back, we need a way to restore them
+	var escaped []string
+	guide := make(map[string]string)
 
-    for _, original := range list {
-        repr := fmt.Sprintf("%#v", original)
-        max := len(repr) - 1 // drop right quote
+	for _, original := range list {
+		repr := fmt.Sprintf("%#v", original)
+		max := len(repr) - 1 // drop right quote
 
-        // dmenu will split lines longer than 1200 something; we cut at 400 to spare memory
-        if cutting {
-            maxChars := 400
-            if max > maxChars {
-                max = maxChars
-            }
-        }
+		// dmenu will split lines longer than 1200 something; we cut at 400 to spare memory
+		if cutting {
+			maxChars := 400
+			if max > maxChars {
+				max = maxChars
+			}
+		}
 
-        repr = repr[1:max] // drop left quote
-        guide[repr] = original
-        escaped = append(escaped, repr)
-    }
+		repr = repr[1:max] // drop left quote
+		guide[repr] = original
+		escaped = append(escaped, repr)
+	}
 
-    return escaped, guide
+	return escaped, guide
 }

@@ -22,6 +22,8 @@ For primary clipboard support, also add `exec wl-paste -p -t text --watch clipma
 To query the history and select items, run the binary as `clipman pick`. You can assign it to a keybinding: `bindsym $mod+h exec clipman pick`.
 For primary clipboard support, `clipman pick --histpath="~/.local/share/clipman-primary.json`.
 
+To remove items from history, `clipman clear` and `clipman clear --all`.
+
 For more options: `clipman -h`.
 
 ## Versions

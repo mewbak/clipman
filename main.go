@@ -53,10 +53,13 @@ func main() {
 	var history []string
 	b, err := ioutil.ReadFile(histfile)
 	if err != nil {
-		log.Fatalf("Failure reading history file: %s", err)
-	}
-	if err := json.Unmarshal(b, &history); err != nil {
-		log.Fatalf("Failure parsing history: %s", err)
+		if !os.IsNotExist(err) {
+			log.Fatalf("Failure reading history file: %s", err)
+		}
+	} else {
+		if err := json.Unmarshal(b, &history); err != nil {
+			log.Fatalf("Failure parsing history: %s", err)
+		}
 	}
 
 	if *asDemon {

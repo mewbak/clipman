@@ -9,25 +9,23 @@ import (
 	"strings"
 )
 
-func selector(history []string, max int, tool string) error {
+func selector(history []string, max int, tool string) (string, error) {
 	if len(history) == 0 {
 		log.Fatal("No history available")
 	}
 
+	// don't modify in-place!
+	tmp := make([]string, len(history))
+	copy(tmp, history)
+
 	// reverse the history
 	for i, j := 0, len(history)-1; i < j; i, j = i+1, j-1 {
-		history[i], history[j] = history[j], history[i]
+		tmp[i], tmp[j] = tmp[j], tmp[i]
 	}
 
-	selected, err := dmenu(history, max, tool)
-	if err != nil {
-		return err
-	}
+	selected, err := dmenu(tmp, max, tool)
 
-	// serve selection to the OS
-	err = exec.Command("wl-copy", []string{"--", selected}...).Run()
-
-	return err
+	return selected, err
 }
 
 func dmenu(list []string, max int, tool string) (string, error) {

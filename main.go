@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -14,10 +15,10 @@ import (
 var (
 	app       = kingpin.New("clipman", "A clipboard manager for Wayland")
 	histpath  = app.Flag("histpath", "Path of history file").Default("~/.local/share/clipman.json").String()
-	demon     = app.Command("listen", "Run as a demon to record clipboard events")
+	storer    = app.Command("store", "Run from `wl-paste --watch` to record clipboard events")
 	picker    = app.Command("pick", "Pick an item from clipboard history")
-	noPersist = demon.Flag("no-persist", "Don't persist a copy buffer after a program exits").Short('P').Default("false").Bool()
-	maxDemon  = demon.Flag("max-items", "history size").Default("15").Int()
+	noPersist = storer.Flag("no-persist", "Don't persist a copy buffer after a program exits").Short('P').Default("false").Bool()
+	maxDemon  = storer.Flag("max-items", "history size").Default("15").Int()
 	maxPicker = picker.Flag("max-items", "scrollview length").Default("15").Int()
 	tool      = picker.Flag("selector", "Which selector to use: dmenu/rofi/-").Default("dmenu").String()
 )
@@ -25,13 +26,26 @@ var (
 func main() {
 	app.HelpFlag.Short('h')
 	switch kingpin.MustParse(app.Parse(os.Args[1:])) {
-	case "listen":
+	case "store":
 		persist := !*noPersist
+
 		histfile, history, err := getHistory()
 		if err != nil {
 			log.Fatal(err)
 		}
-		listen(history, histfile, persist, *maxDemon)
+
+		// read copy from stdin
+		var stdin []string
+		scanner := bufio.NewScanner(os.Stdin)
+		for scanner.Scan() {
+			stdin = append(stdin, scanner.Text())
+		}
+		if err := scanner.Err(); err != nil {
+			log.Fatal("Error getting input from stdin.")
+		}
+		text := strings.Join(stdin, "\n")
+
+		store(text, history, histfile, *maxDemon, persist)
 	case "pick":
 		_, history, err := getHistory()
 		if err != nil {

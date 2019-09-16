@@ -7,11 +7,15 @@ import (
 	"os/exec"
 )
 
-func store(text string, history []string, histfile string, max int, persist bool) []string {
+func store(text string, history []string, histfile string, max int, persist bool) {
+	if text == "" {
+		return
+	}
+
 	l := len(history)
 	if l > 0 {
 		if history[l-1] == text {
-			return history
+			return
 		}
 
 		if l >= max {
@@ -38,7 +42,7 @@ func store(text string, history []string, histfile string, max int, persist bool
 		}
 	}
 
-	return history
+	return
 }
 
 func filter(history []string, text string) []string {

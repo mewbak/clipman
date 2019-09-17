@@ -65,8 +65,8 @@ func selector(data []string, max int, tool string) (string, error) {
 
 // preprocessData:
 // - reverses the data
-// - escapes special characters (like newlines) that would break external selectors;
-// - optionally it cuts items longer than 400 bytes (dmenu doesn't allow more than ~1200).
+// - escapes \n (it would break external selectors)
+// - optionally it cuts items longer than 400 bytes (dmenu doesn't allow more than ~1200)
 // A guide is created to allow restoring the selected item.
 func preprocessData(data []string, cutting bool) ([]string, map[string]string) {
 	var escaped []string
@@ -75,15 +75,15 @@ func preprocessData(data []string, cutting bool) ([]string, map[string]string) {
 	for i := len(data) - 1; i >= 0; i-- { // reverse slice
 		original := data[i]
 
-		repr := fmt.Sprintf("%#v", original)
-		size := len(repr) - 1
-		if cutting {
-			const maxChars = 400
-			if size > maxChars {
-				size = maxChars
-			}
+		// escape newlines
+		repr := strings.ReplaceAll(original, "\\n", "\\\\n") // preserve literal \n
+		repr = strings.ReplaceAll(repr, "\n", "\\n")
+
+		// optionally cut to maxChars
+		const maxChars = 400
+		if cutting && len(repr) > maxChars {
+			repr = repr[:maxChars]
 		}
-		repr = repr[1:size] // drop left and right quotes
 
 		guide[repr] = original
 		escaped = append(escaped, repr)

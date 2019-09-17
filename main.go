@@ -67,7 +67,9 @@ func main() {
 		}
 
 		// serve selection to the OS
-		err = exec.Command("wl-copy", []string{"--", selection}...).Run()
+		if err := exec.Command("wl-copy", []string{"--", selection}...).Run(); err != nil {
+			log.Fatal(err)
+		}
 	case "clear":
 		histfile, history, err := getHistory(*histpath)
 		if err != nil {

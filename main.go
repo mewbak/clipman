@@ -92,6 +92,13 @@ func main() {
 		}
 
 		if selection != "" {
+			if selection == history[len(history)-1] {
+				// it's the latest item
+				// in this case, wl-copy is still serving the copy, so wipe it
+				if err := exec.Command("wl-copy", "-c").Run(); err != nil {
+					log.Fatal(err)
+				}
+			}
 			if err := write(filter(history, selection), histfile); err != nil {
 				log.Fatal(err)
 			}

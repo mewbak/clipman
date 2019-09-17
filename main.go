@@ -66,9 +66,11 @@ func main() {
 			log.Fatal(err)
 		}
 
-		// serve selection to the OS
-		if err := exec.Command("wl-copy", []string{"--", selection}...).Run(); err != nil {
-			log.Fatal(err)
+		if selection != "" {
+			// serve selection to the OS
+			if err := exec.Command("wl-copy", []string{"--", selection}...).Run(); err != nil {
+				log.Fatal(err)
+			}
 		}
 	case "clear":
 		histfile, history, err := getHistory(*histpath)
@@ -89,8 +91,10 @@ func main() {
 			log.Fatal(err)
 		}
 
-		if err := write(filter(history, selection), histfile); err != nil {
-			log.Fatal(err)
+		if selection != "" {
+			if err := write(filter(history, selection), histfile); err != nil {
+				log.Fatal(err)
+			}
 		}
 	}
 }

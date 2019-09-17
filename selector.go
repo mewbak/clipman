@@ -11,7 +11,7 @@ import (
 
 func selector(data []string, max int, tool string) (string, error) {
 	if len(data) == 0 {
-		return "", errors.New("No history available")
+		return "", errors.New("no data available")
 	}
 
 	// output to stdout and return

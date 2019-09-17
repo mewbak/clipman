@@ -15,7 +15,7 @@ func selector(data []string, max int, tool string) (string, error) {
 	}
 
 	// output to stdout and return
-	if tool == "-" {
+	if tool == "STDOUT" {
 		escaped, _ := preprocessData(data, false)
 		os.Stdout.WriteString(strings.Join(escaped, "\n"))
 		return "", nil

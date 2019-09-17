@@ -2,24 +2,22 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os/exec"
 )
 
-func store(text string, history []string, histfile string, max int, persist bool) {
+func store(text string, history []string, histfile string, max int, persist bool) error {
 	if text == "" {
-		return
+		return nil
 	}
 
 	l := len(history)
 	if l > 0 {
-		if history[l-1] == text {
-			return
-		}
-
+		// drop oldest items that exceed max list size
 		if l >= max {
-			// usually just one item, but more if we reduce our --max-items value
+			// usually just one item, but more if we suddenly reduce our --max-items
 			history = history[l-max+1:]
 		}
 
@@ -31,49 +29,38 @@ func store(text string, history []string, histfile string, max int, persist bool
 
 	// dump history to file so that other apps can query it
 	if err := write(history, histfile); err != nil {
-		log.Fatalf("Fatal error writing history: %s", err)
+		return fmt.Errorf("error writing history: %s", err)
 	}
 
+	// make the copy buffer available to all applications,
+	// even when the source has disappeared
 	if persist {
-		// make the copy buffer available to all applications,
-		// even when the source has disappeared
 		if err := exec.Command("wl-copy", []string{"--", text}...).Run(); err != nil {
-			log.Printf("Error running wl-copy: %s", err)
+			log.Printf("Error running wl-copy: %s", err) // don't abort, minor error
 		}
 	}
 
-	return
+	return nil
 }
 
-func filter(history []string, text string) []string {
-	var (
-		found bool
-		idx   int
-	)
-
-	for i, el := range history {
-		if el == text {
-			found = true
-			idx = i
-			break
+// filter removes all occurrences of text
+func filter(slice []string, text string) []string {
+	var filtered []string
+	for _, s := range slice {
+		if s != text {
+			filtered = append(filtered, s)
 		}
 	}
 
-	if found {
-		// we know that idx can't be the last element, because
-		// we never get to call this function if that's the case
-		history = append(history[:idx], history[idx+1:]...)
-	}
-
-	return history
+	return filtered
 }
 
+// write dumps history to json file
 func write(history []string, histfile string) error {
-	histlog, err := json.Marshal(history)
+	b, err := json.Marshal(history)
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(histfile, histlog, 0644)
 
-	return err
+	return ioutil.WriteFile(histfile, b, 0644)
 }

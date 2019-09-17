@@ -1,36 +1,22 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
 )
 
-func selector(history []string, max int, tool string) (string, error) {
-	if len(history) == 0 {
-		log.Fatal("No history available")
+func selector(data []string, max int, tool string) (string, error) {
+	if len(data) == 0 {
+		return "", errors.New("No history available")
 	}
 
-	// don't modify in-place!
-	tmp := make([]string, len(history))
-	copy(tmp, history)
-
-	// reverse the history
-	for i, j := 0, len(history)-1; i < j; i, j = i+1, j-1 {
-		tmp[i], tmp[j] = tmp[j], tmp[i]
-	}
-
-	selected, err := dmenu(tmp, max, tool)
-
-	return selected, err
-}
-
-func dmenu(list []string, max int, tool string) (string, error) {
+	// output to stdout and return
 	if tool == "-" {
-		escaped, _ := preprocessHistory(list, false)
+		escaped, _ := preprocessData(data, false)
 		os.Stdout.WriteString(strings.Join(escaped, "\n"))
 		return "", nil
 	}
@@ -53,50 +39,52 @@ func dmenu(list []string, max int, tool string) (string, error) {
 			"-lines",
 			strconv.Itoa(max)}
 	default:
-		return "", fmt.Errorf("Unsupported tool")
+		return "", fmt.Errorf("Unsupported tool: %s", tool)
 	}
 
-	escaped, guide := preprocessHistory(list, true)
-	input := strings.NewReader(strings.Join(escaped, "\n"))
+	processed, guide := preprocessData(data, true)
 
-	cmd := exec.Cmd{Path: bin, Args: args, Stdin: input}
-	selected, err := cmd.Output()
+	cmd := exec.Cmd{Path: bin, Args: args, Stdin: strings.NewReader(strings.Join(processed, "\n"))}
+	b, err := cmd.CombinedOutput()
 	if err != nil {
 		if err.Error() == "exit status 1" {
-			// dmenu exits with this error when no selection done
+			// dmenu/rofi exits with this error when no selection done
 			return "", nil
 		}
 		return "", err
 	}
-	trimmed := selected[:len(selected)-1] // drop newline added by dmenu
+	selected := string(b[:len(b)-1]) // drop newline added by dmenu/rofi
 
-	sel, ok := guide[string(trimmed)]
+	sel, ok := guide[selected]
 	if !ok {
-		return "", fmt.Errorf("couldn't recover original string; please report this bug along with a copy of your clipman.json")
+		return "", errors.New("couldn't recover original string")
 	}
 
 	return sel, nil
 }
 
-func preprocessHistory(list []string, cutting bool) ([]string, map[string]string) {
-	// dmenu will break if items contain newlines, so we must pass them as literals.
-	// however, when it sends them back, we need a way to restore them
+// preprocessData:
+// - reverses the data
+// - escapes special characters (like newlines) that would break external selectors;
+// - optionally it cuts items longer than 400 bytes (dmenu doesn't allow more than ~1200).
+// A guide is created to allow restoring the selected item.
+func preprocessData(data []string, cutting bool) ([]string, map[string]string) {
 	var escaped []string
 	guide := make(map[string]string)
 
-	for _, original := range list {
-		repr := fmt.Sprintf("%#v", original)
-		max := len(repr) - 1 // drop right quote
+	for i := len(data) - 1; i >= 0; i-- { // reverse slice
+		original := data[i]
 
-		// dmenu will split lines longer than 1200 something; we cut at 400 to spare memory
+		repr := fmt.Sprintf("%#v", original)
+		size := len(repr) - 1
 		if cutting {
-			maxChars := 400
-			if max > maxChars {
-				max = maxChars
+			const maxChars = 400
+			if size > maxChars {
+				size = maxChars
 			}
 		}
+		repr = repr[1:size] // drop left and right quotes
 
-		repr = repr[1:max] // drop left quote
 		guide[repr] = original
 		escaped = append(escaped, repr)
 	}

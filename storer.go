@@ -15,6 +15,13 @@ func store(text string, history []string, histfile string, max int, persist bool
 
 	l := len(history)
 	if l > 0 {
+		// this avoids entering an endless loop,
+		// see https://github.com/bugaevc/wl-clipboard/issues/65
+		last := history[l-1]
+		if text == last {
+			return nil
+		}
+
 		// drop oldest items that exceed max list size
 		if l >= max {
 			// usually just one item, but more if we suddenly reduce our --max-items

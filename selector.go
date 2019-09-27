@@ -16,7 +16,7 @@ func selector(data []string, max int, tool string) (string, error) {
 
 	// output to stdout and return
 	if tool == "STDOUT" {
-		escaped, _ := preprocessData(data, false)
+		escaped, _ := preprocessData(data, false, true)
 		os.Stdout.WriteString(strings.Join(escaped, "\n"))
 		return "", nil
 	}
@@ -42,7 +42,7 @@ func selector(data []string, max int, tool string) (string, error) {
 		return "", fmt.Errorf("Unsupported tool: %s", tool)
 	}
 
-	processed, guide := preprocessData(data, true)
+	processed, guide := preprocessData(data, true, false)
 
 	cmd := exec.Cmd{Path: bin, Args: args, Stdin: strings.NewReader(strings.Join(processed, "\n"))}
 	b, err := cmd.CombinedOutput()
@@ -68,7 +68,7 @@ func selector(data []string, max int, tool string) (string, error) {
 // - escapes \n (it would break external selectors)
 // - optionally it cuts items longer than 400 bytes (dmenu doesn't allow more than ~1200)
 // A guide is created to allow restoring the selected item.
-func preprocessData(data []string, cutting bool) ([]string, map[string]string) {
+func preprocessData(data []string, cutting bool, allowTabs bool) ([]string, map[string]string) {
 	var escaped []string
 	guide := make(map[string]string)
 
@@ -78,6 +78,11 @@ func preprocessData(data []string, cutting bool) ([]string, map[string]string) {
 		// escape newlines
 		repr := strings.ReplaceAll(original, "\\n", "\\\\n") // preserve literal \n
 		repr = strings.ReplaceAll(repr, "\n", "\\n")
+
+		if !allowTabs {
+			repr = strings.ReplaceAll(repr, "\\t", "\\\\t")
+			repr = strings.ReplaceAll(repr, "\t", "\\t")
+		}
 
 		// optionally cut to maxChars
 		const maxChars = 400

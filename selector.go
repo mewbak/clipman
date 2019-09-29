@@ -38,6 +38,8 @@ func selector(data []string, max int, tool string) (string, error) {
 		args = []string{"rofi", "-dmenu",
 			"-lines",
 			strconv.Itoa(max)}
+	case "wofi":
+		args = []string{"wofi", "--show", "dmenu", strconv.Itoa(max)}
 	default:
 		return "", fmt.Errorf("Unsupported tool: %s", tool)
 	}
@@ -53,7 +55,13 @@ func selector(data []string, max int, tool string) (string, error) {
 		}
 		return "", err
 	}
-	selected := string(b[:len(b)-1]) // drop newline added by dmenu/rofi
+
+	// Wofi however does not error when no selection is done
+	if len(b) == 0 {
+		return "", nil
+	}
+
+	selected := string(b[:len(b)-1]) // drop newline added by dmenu/rofi/wofi
 
 	sel, ok := guide[selected]
 	if !ok {

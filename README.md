@@ -8,7 +8,7 @@ Requirements:
 
 - a windows manager that uses `wlr-data-control`, like Sway and other wlroots-based WMs.
 - wl-clipboard >= 2.0
-- dmenu or rofi
+- dmenu, rofi or wofi
 
 [Install go](https://golang.org/doc/install), add `$GOPATH/bin` to your path, then run `go get github.com/yory8/clipman` OR run `go install` inside this folder.
 

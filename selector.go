@@ -47,8 +47,8 @@ func selector(data []string, max int, tool string) (string, error) {
 	processed, guide := preprocessData(data, true, false)
 
 	cmd := exec.Cmd{Path: bin, Args: args, Stdin: strings.NewReader(strings.Join(processed, "\n"))}
+	cmd.Stderr = os.Stderr // let stderr pass to console
 	b, err := cmd.Output()
-	// note: ignore stderr, necessary e.g. for wofi's gtk errors
 	if err != nil {
 		if err.Error() == "exit status 1" {
 			// dmenu/rofi exits with this error when no selection done

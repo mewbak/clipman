@@ -39,7 +39,7 @@ func selector(data []string, max int, tool string) (string, error) {
 			"-lines",
 			strconv.Itoa(max)}
 	case "wofi":
-		args = []string{"wofi", "--cache-file", "/dev/null", "--dmenu", strconv.Itoa(max)}
+		args = []string{"wofi", "--cache-file", "/dev/null", "--dmenu"}
 	default:
 		return "", fmt.Errorf("Unsupported tool: %s", tool)
 	}

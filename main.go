@@ -13,6 +13,8 @@ import (
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
+const version = "1.0.2"
+
 var (
 	app      = kingpin.New("clipman", "A clipboard manager for Wayland")
 	histpath = app.Flag("histpath", "Path of history file").Default("~/.local/share/clipman.json").String()
@@ -32,7 +34,9 @@ var (
 )
 
 func main() {
+	app.Version(version)
 	app.HelpFlag.Short('h')
+	app.VersionFlag.Short('v')
 	switch kingpin.MustParse(app.Parse(os.Args[1:])) {
 	case "store":
 		histfile, history, err := getHistory(*histpath)

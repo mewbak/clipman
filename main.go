@@ -65,7 +65,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		selection, err := selector(history, *maxPicker, *pickTool)
+		selection, err := selector(history, *maxPicker, *pickTool, "pick")
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -90,7 +90,7 @@ func main() {
 			return
 		}
 
-		selection, err := selector(history, *maxClearer, *clearTool)
+		selection, err := selector(history, *maxClearer, *clearTool, "clear")
 		if err != nil {
 			log.Fatal(err)
 		}

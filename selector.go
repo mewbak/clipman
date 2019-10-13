@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func selector(data []string, max int, tool string) (string, error) {
+func selector(data []string, max int, tool string, prompt string) (string, error) {
 	if len(data) == 0 {
 		return "", errors.New("nothing to show: no data available")
 	}
@@ -35,11 +35,11 @@ func selector(data []string, max int, tool string) (string, error) {
 			"-l",
 			strconv.Itoa(max)}
 	case "rofi":
-		args = []string{"rofi", "-dmenu",
+		args = []string{"rofi", "-p", prompt, "-dmenu",
 			"-lines",
 			strconv.Itoa(max)}
 	case "wofi":
-		args = []string{"wofi", "--cache-file", "/dev/null", "--dmenu"}
+		args = []string{"wofi", "-p", prompt, "--cache-file", "/dev/null", "--dmenu"}
 	default:
 		return "", fmt.Errorf("Unsupported tool: %s", tool)
 	}

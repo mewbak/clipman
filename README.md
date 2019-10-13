@@ -26,6 +26,16 @@ To remove items from history, `clipman clear` and `clipman clear --all`.
 
 For more options: `clipman -h`.
 
+## Known Issues
+
+### Loss of rich text
+
+All items stored in history are treated as plain text.
+
+By default, we continue serving the last copied item even after its owner has exited. The trade-off is that we *always* lose rich content: for example, if you copy some bold text in LibreOffice, when you paste it right after it will be unformatted text; or, if you copy a bookmark in Firefox, you won't be able to paste it in another bookmark folder.
+
+To disable this behaviour, you must give up persistency-after exit by passing the `-P` option to `clipman store`. (Items manually picked from history will still be just plain text.)
+
 ## Versions
 
 This projects follows SemVer conventions.

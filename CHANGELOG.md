@@ -1,3 +1,10 @@
+# 1.1
+
+**New features**
+
+- add support for wofi selector, a native wayland rofi clone
+- serve next-to-last item when clearing last item
+
 # 1.0
 
 **Breaking changes**:

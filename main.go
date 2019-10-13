@@ -72,7 +72,7 @@ func main() {
 
 		if selection != "" {
 			// serve selection to the OS
-			if err := exec.Command("wl-copy", []string{"--", selection}...).Run(); err != nil {
+			if err := exec.Command("wl-copy", "--", selection).Run(); err != nil {
 				log.Fatal(err)
 			}
 		}
@@ -84,10 +84,10 @@ func main() {
 
 		// remove all history
 		if *clearAll {
-			if err := os.Remove(histfile); err != nil {
+			if err := wipeAll(histfile); err != nil {
 				log.Fatal(err)
 			}
-			os.Exit(0)
+			return
 		}
 
 		selection, err := selector(history, *maxClearer, *clearTool)
@@ -95,19 +95,44 @@ func main() {
 			log.Fatal(err)
 		}
 
-		if selection != "" {
-			if selection == history[len(history)-1] {
-				// it's the latest item
-				// in this case, wl-copy is still serving the copy, so wipe it
-				if err := exec.Command("wl-copy", "-c").Run(); err != nil {
-					log.Fatal(err)
-				}
+		if selection == "" {
+			return
+		}
+
+		if len(history) < 2 {
+			// there was only one possible item we could select, and we selected it,
+			// so wipe everything
+			if err := wipeAll(histfile); err != nil {
+				log.Fatal(err)
 			}
-			if err := write(filter(history, selection), histfile); err != nil {
+			return
+		}
+
+		if selection == history[len(history)-1] {
+			// wl-copy is still serving the copy, so replace with next latest
+			// note: we alread exited if less than 2 items
+			if err := exec.Command("wl-copy", "--", history[len(history)-2]).Run(); err != nil {
 				log.Fatal(err)
 			}
 		}
+
+		if err := write(filter(history, selection), histfile); err != nil {
+			log.Fatal(err)
+		}
 	}
+}
+
+func wipeAll(histfile string) error {
+	// clear WM's clipboard
+	if err := exec.Command("wl-copy", "-c").Run(); err != nil {
+		return err
+	}
+
+	if err := os.Remove(histfile); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func getHistory(rawPath string) (string, []string, error) {

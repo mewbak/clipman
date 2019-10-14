@@ -23,14 +23,16 @@ var (
 	maxDemon  = storer.Flag("max-items", "history size").Default("15").Int()
 	noPersist = storer.Flag("no-persist", "Don't persist a copy buffer after a program exits").Short('P').Default("false").Bool()
 
-	picker    = app.Command("pick", "Pick an item from clipboard history")
-	maxPicker = picker.Flag("max-items", "scrollview length").Default("15").Int()
-	pickTool  = picker.Flag("tool", "Which selector to use: dmenu/rofi/wofi/STDOUT").Short('t').Default("dmenu").String()
+	picker       = app.Command("pick", "Pick an item from clipboard history")
+	maxPicker    = picker.Flag("max-items", "scrollview length").Default("15").Int()
+	pickTool     = picker.Flag("tool", "Which selector to use: dmenu/rofi/wofi/STDOUT").Short('t').Default("dmenu").String()
+	pickToolArgs = picker.Flag("tool-args", "Extra arguments to pass to the --tool").Short('T').Default("").String()
 
-	clearer    = app.Command("clear", "Remove item(s) from history")
-	maxClearer = clearer.Flag("max-items", "scrollview length").Default("15").Int()
-	clearTool  = clearer.Flag("tool", "Which selector to use: dmenu/rofi/wofi/STDOUT").Short('t').Default("dmenu").String()
-	clearAll   = clearer.Flag("all", "Remove all items").Short('a').Default("false").Bool()
+	clearer       = app.Command("clear", "Remove item(s) from history")
+	maxClearer    = clearer.Flag("max-items", "scrollview length").Default("15").Int()
+	clearTool     = clearer.Flag("tool", "Which selector to use: dmenu/rofi/wofi/STDOUT").Short('t').Default("dmenu").String()
+	clearToolArgs = clearer.Flag("tool-args", "Extra arguments to pass to the --tool").Short('T').Default("").String()
+	clearAll      = clearer.Flag("all", "Remove all items").Short('a').Default("false").Bool()
 )
 
 func main() {
@@ -65,7 +67,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		selection, err := selector(history, *maxPicker, *pickTool, "pick")
+		selection, err := selector(history, *maxPicker, *pickTool, "pick", *pickToolArgs)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -90,7 +92,7 @@ func main() {
 			return
 		}
 
-		selection, err := selector(history, *maxClearer, *clearTool, "clear")
+		selection, err := selector(history, *maxClearer, *clearTool, "clear", *clearToolArgs)
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func selector(data []string, max int, tool string, prompt string) (string, error) {
+func selector(data []string, max int, tool string, prompt string, toolsArgs string) (string, error) {
 	if len(data) == 0 {
 		return "", errors.New("nothing to show: no data available")
 	}
@@ -43,6 +43,8 @@ func selector(data []string, max int, tool string, prompt string) (string, error
 	default:
 		return "", fmt.Errorf("Unsupported tool: %s", tool)
 	}
+
+	args = append(args, strings.Fields(toolsArgs)...)
 
 	processed, guide := preprocessData(data, true, false)
 

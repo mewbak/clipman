@@ -33,6 +33,8 @@ var (
 	clearTool     = clearer.Flag("tool", "Which selector to use: dmenu/rofi/wofi/STDOUT").Short('t').Default("dmenu").String()
 	clearToolArgs = clearer.Flag("tool-args", "Extra arguments to pass to the --tool").Short('T').Default("").String()
 	clearAll      = clearer.Flag("all", "Remove all items").Short('a').Default("false").Bool()
+
+	restorer = app.Command("restore", "Serve the last recorded item from history")
 )
 
 func main() {
@@ -77,6 +79,20 @@ func main() {
 			if err := exec.Command("wl-copy", "--", selection).Run(); err != nil {
 				log.Fatal(err)
 			}
+		}
+	case "restore":
+		_, history, err := getHistory(*histpath)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if len(history) == 0 {
+			log.Println("Nothing to restore")
+			return
+		}
+
+		if err := exec.Command("wl-copy", "--", history[len(history)-1]).Run(); err != nil {
+			log.Fatal(err)
 		}
 	case "clear":
 		histfile, history, err := getHistory(*histpath)

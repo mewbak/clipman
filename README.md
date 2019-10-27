@@ -24,6 +24,8 @@ For primary clipboard support, `clipman pick --histpath="~/.local/share/clipman-
 
 To remove items from history, `clipman clear` and `clipman clear --all`.
 
+To serve the last history item at startup, add `exec clipman restore` to your Sway config.
+
 For more options: `clipman -h`.
 
 ## Known Issues

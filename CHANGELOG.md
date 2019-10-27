@@ -1,3 +1,9 @@
+# Next
+
+**New features**
+
+- `restore` command to serve the last history item, useful when run at startup.
+
 # 1.1
 
 **New features**

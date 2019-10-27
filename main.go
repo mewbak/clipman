@@ -41,13 +41,15 @@ func main() {
 	app.Version(version)
 	app.HelpFlag.Short('h')
 	app.VersionFlag.Short('v')
-	switch kingpin.MustParse(app.Parse(os.Args[1:])) {
-	case "store":
-		histfile, history, err := getHistory(*histpath)
-		if err != nil {
-			log.Fatal(err)
-		}
+	action := kingpin.MustParse(app.Parse(os.Args[1:]))
 
+	histfile, history, err := getHistory(*histpath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	switch action {
+	case "store":
 		// read copy from stdin
 		var stdin []string
 		scanner := bufio.NewScanner(os.Stdin)
@@ -64,11 +66,6 @@ func main() {
 			log.Fatal(err)
 		}
 	case "pick":
-		_, history, err := getHistory(*histpath)
-		if err != nil {
-			log.Fatal(err)
-		}
-
 		selection, err := selector(history, *maxPicker, *pickTool, "pick", *pickToolArgs)
 		if err != nil {
 			log.Fatal(err)
@@ -81,11 +78,6 @@ func main() {
 			}
 		}
 	case "restore":
-		_, history, err := getHistory(*histpath)
-		if err != nil {
-			log.Fatal(err)
-		}
-
 		if len(history) == 0 {
 			log.Println("Nothing to restore")
 			return
@@ -95,11 +87,6 @@ func main() {
 			log.Fatal(err)
 		}
 	case "clear":
-		histfile, history, err := getHistory(*histpath)
-		if err != nil {
-			log.Fatal(err)
-		}
-
 		// remove all history
 		if *clearAll {
 			if err := wipeAll(histfile); err != nil {

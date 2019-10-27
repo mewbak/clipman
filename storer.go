@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 )
 
 func store(text string, history []string, histfile string, max int, persist bool) error {
@@ -42,9 +41,7 @@ func store(text string, history []string, histfile string, max int, persist bool
 	// make the copy buffer available to all applications,
 	// even when the source has disappeared
 	if persist {
-		if err := serveTxt(text); err != nil {
-			log.Print(err) // don't abort, minor error
-		}
+		serveTxt(text)
 	}
 
 	return nil

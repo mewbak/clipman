@@ -73,9 +73,7 @@ func main() {
 
 		if selection != "" {
 			// serve selection to the OS
-			if err := serveTxt(selection); err != nil {
-				log.Fatal(err)
-			}
+			serveTxt(selection)
 		}
 	case "restore":
 		if len(history) == 0 {
@@ -83,9 +81,7 @@ func main() {
 			return
 		}
 
-		if err := serveTxt(history[len(history)-1]); err != nil {
-			log.Fatal(err)
-		}
+		serveTxt(history[len(history)-1])
 	case "clear":
 		// remove all history
 		if *clearAll {
@@ -167,16 +163,14 @@ func getHistory(rawPath string) (string, []string, error) {
 	return histfile, history, nil
 }
 
-func serveTxt(s string) error {
+func serveTxt(s string) {
 	bin, err := exec.LookPath("wl-copy")
 	if err != nil {
-		return fmt.Errorf("couldn't find wl-copy: %v", err)
+		log.Printf("couldn't find wl-copy: %v\n", err)
 	}
 
 	cmd := exec.Cmd{Path: bin, Stdin: strings.NewReader(s)}
 	if err := cmd.Run(); err != nil {
-		log.Printf("Error running wl-copy: %s", err) // don't abort, minor error
+		log.Printf("error running wl-copy: %s\n", err)
 	}
-
-	return nil
 }

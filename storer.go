@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"os/exec"
 )
 
 func store(text string, history []string, histfile string, max int, persist bool) error {
@@ -43,8 +42,8 @@ func store(text string, history []string, histfile string, max int, persist bool
 	// make the copy buffer available to all applications,
 	// even when the source has disappeared
 	if persist {
-		if err := exec.Command("wl-copy", []string{"--", text}...).Run(); err != nil {
-			log.Printf("Error running wl-copy: %s", err) // don't abort, minor error
+		if err := serveTxt(text); err != nil {
+			log.Print(err) // don't abort, minor error
 		}
 	}
 

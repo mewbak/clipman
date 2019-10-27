@@ -6,6 +6,10 @@
 - `--tool-args` argument to pass additional args to dmenu/rofi/etc.
 - rofi and wofi now display a prompt hint to remind you whether you are picking or clearing
 
+**Notable Bug fixes**
+
+- we don't leak our clipboard to `ps` anymore
+
 # 1.1
 
 **New features**

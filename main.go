@@ -73,7 +73,7 @@ func main() {
 
 		if selection != "" {
 			// serve selection to the OS
-			if err := exec.Command("wl-copy", "--", selection).Run(); err != nil {
+			if err := serveTxt(selection); err != nil {
 				log.Fatal(err)
 			}
 		}
@@ -83,7 +83,7 @@ func main() {
 			return
 		}
 
-		if err := exec.Command("wl-copy", "--", history[len(history)-1]).Run(); err != nil {
+		if err := serveTxt(history[len(history)-1]); err != nil {
 			log.Fatal(err)
 		}
 	case "clear":
@@ -116,7 +116,7 @@ func main() {
 		if selection == history[len(history)-1] {
 			// wl-copy is still serving the copy, so replace with next latest
 			// note: we alread exited if less than 2 items
-			if err := exec.Command("wl-copy", "--", history[len(history)-2]).Run(); err != nil {
+			if err := serveTxt(history[len(history)-2]); err != nil {
 				log.Fatal(err)
 			}
 		}
@@ -165,4 +165,18 @@ func getHistory(rawPath string) (string, []string, error) {
 	}
 
 	return histfile, history, nil
+}
+
+func serveTxt(s string) error {
+	bin, err := exec.LookPath("wl-copy")
+	if err != nil {
+		return fmt.Errorf("couldn't find wl-copy: %v", err)
+	}
+
+	cmd := exec.Cmd{Path: bin, Stdin: strings.NewReader(s)}
+	if err := cmd.Run(); err != nil {
+		log.Printf("Error running wl-copy: %s", err) // don't abort, minor error
+	}
+
+	return nil
 }

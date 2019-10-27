@@ -23,7 +23,8 @@ func store(text string, history []string, histfile string, max int, persist bool
 		}
 
 		// drop oldest items that exceed max list size
-		if l >= max {
+		// if max = 0, we allow infinite history; NOTE: users should NOT rely on this behaviour as we might change it without notice
+		if max != 0 && l >= max {
 			// usually just one item, but more if we suddenly reduce our --max-items
 			history = history[l-max+1:]
 		}

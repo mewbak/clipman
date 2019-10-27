@@ -3,6 +3,8 @@
 **New features**
 
 - `restore` command to serve the last history item, useful when run at startup.
+- `--tool-args` argument to pass additional args to dmenu/rofi/etc.
+- rofi and wofi now display a prompt hint to remind you whether you are picking or clearing
 
 # 1.1
 

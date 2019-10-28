@@ -112,9 +112,7 @@ func main() {
 		if selection == history[len(history)-1] {
 			// wl-copy is still serving the copy, so replace with next latest
 			// note: we alread exited if less than 2 items
-			if err := serveTxt(history[len(history)-2]); err != nil {
-				log.Fatal(err)
-			}
+			serveTxt(history[len(history)-2])
 		}
 
 		if err := write(filter(history, selection), histfile); err != nil {

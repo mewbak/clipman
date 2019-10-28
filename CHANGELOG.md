@@ -1,4 +1,4 @@
-# Next
+# 1.2.0
 
 **New features**
 
@@ -10,14 +10,14 @@
 
 - we don't leak our clipboard to `ps` anymore
 
-# 1.1
+# 1.1.0
 
 **New features**
 
 - add support for wofi selector, a native wayland rofi clone
 - serve next-to-last item when clearing last item
 
-# 1.0
+# 1.0.0
 
 **Breaking changes**:
 

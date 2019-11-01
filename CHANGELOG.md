@@ -1,9 +1,5 @@
 # Next
 
-**Notable Bug Fixes**
-
-- we change instructions to use `wl-paste -t TEXT` rather than the incorrect `wl-paste -t text`
-
 # 1.2.0
 
 **New features**

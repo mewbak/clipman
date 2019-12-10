@@ -34,6 +34,8 @@ func selector(data []string, max int, tool string, prompt string, toolsArgs stri
 			"-misc-dejavu sans mono-medium-r-normal--17-120-100-100-m-0-iso8859-16",
 			"-l",
 			strconv.Itoa(max)}
+	case "bemenu":
+		args = []string{"bemenu", "--bottom", "--prompt", prompt, "--list", strconv.Itoa(max)}
 	case "rofi":
 		args = []string{"rofi", "-p", prompt, "-dmenu",
 			"-lines",

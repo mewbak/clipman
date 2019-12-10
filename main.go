@@ -25,12 +25,12 @@ var (
 
 	picker       = app.Command("pick", "Pick an item from clipboard history")
 	maxPicker    = picker.Flag("max-items", "scrollview length").Default("15").Int()
-	pickTool     = picker.Flag("tool", "Which selector to use: dmenu/rofi/wofi/STDOUT").Short('t').Default("dmenu").String()
+	pickTool     = picker.Flag("tool", "Which selector to use: dmenu/bemenu/rofi/wofi/STDOUT").Short('t').Default("dmenu").String()
 	pickToolArgs = picker.Flag("tool-args", "Extra arguments to pass to the --tool").Short('T').Default("").String()
 
 	clearer       = app.Command("clear", "Remove item(s) from history")
 	maxClearer    = clearer.Flag("max-items", "scrollview length").Default("15").Int()
-	clearTool     = clearer.Flag("tool", "Which selector to use: dmenu/rofi/wofi/STDOUT").Short('t').Default("dmenu").String()
+	clearTool     = clearer.Flag("tool", "Which selector to use: dmenu/bemenu/rofi/wofi/STDOUT").Short('t').Default("dmenu").String()
 	clearToolArgs = clearer.Flag("tool-args", "Extra arguments to pass to the --tool").Short('T').Default("").String()
 	clearAll      = clearer.Flag("all", "Remove all items").Short('a').Default("false").Bool()
 

@@ -1,5 +1,9 @@
 # Next
 
+**New features**
+
+- add support for bemenu selector, a multi backend dmenu clone
+
 # 1.2.0
 
 **New features**
